@@ -1,0 +1,122 @@
+{% extends 'book/main.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Mua hàng{% endblock %}
+{% block content %}
+<div>
+    <div class="box-element" id="form-wrapper">
+        <form id="form">
+            <div id="shipping-info">
+                <p>Địa chỉ nhận hàng:</p>
+                <hr>
+                <div class="form-field">
+                    <input required class="form-control" type="text" name="name" placeholder="Khách hàng">
+                </div>   
+                <div class="form-field">
+                    <input class="form-control" type="text" name="province" placeholder="Tỉnh">
+                </div>
+                <div class="form-field">
+                    <input class="form-control" type="text" name="city" placeholder="Thành phố">
+                </div>
+                <div class="form-field">
+                    <input class="form-control" type="text" name="address" placeholder="Số nhà">
+                </div>
+            </div>
+            <hr>
+            <input id="form-button" class="btn btn-success btn-block" type="submit" value="Xác nhận">
+        </form>
+    </div>
+
+    <br>
+    <div class="box-element hidden" id="payment-info">Phương thức thanh toán
+        <button id="make-payment">Chọn phương thức thanh toán</button>
+    </div>
+    <br>
+
+    <div class="box-element">
+        <div class="box-element">
+            <a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Trở lại giỏ</a>
+            <hr>
+            <h3>Đơn hàng</h3>
+            <hr>
+            {% for mh in mat_hang %}
+            <div class="cart-row">
+                <div style="flex:2"><img class="row-image" src="{{mh.sach.imageURL}}"></div>
+                <div style="flex:2">{{mh.sach.ten_sach}}</div>
+                <div style="flex:1">{{mh.sach.don_gia|floatformat:0|intcomma}} đ</div>
+                <div style="flex:1">{{mh.so_luong}}</div>
+            </div>
+            {% endfor %}
+            <h5>SL: {{hd.get_cart_items}}</h5>
+            <h5>Tổng tiền: {{hd.get_cart_total|floatformat:0|intcomma}} đ</h5>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // var total = '{{order.get_cart_total|floatformat:0}}'
+    var form = document.getElementById('form')
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
+        console.log('Form submitted...')
+        document.getElementById('form-button').classList.add("hidden")
+        document.getElementById('payment-info').classList.remove("hidden")
+
+    })
+
+    document.getElementById('make-payment').addEventListener('click', function(e){
+        submitFormData()
+    })
+
+    function submitFormData(){
+        alert('Đã thanh toán')
+
+        // var userFormData = {
+        //     'name': null,
+        //     'total': total,
+        // }
+
+        // var shippingInfo = {
+        //     'address': null,
+        //     'city': null,
+        //     'province': total,
+        // }
+
+        // shippingInfo.address = form.address.value
+        // shippingInfo.city = form.city.value
+        // shippingInfo.province = form.province.value
+
+        // if(user == "AnonymousUser"){
+        //     userFormData.name = form.name.value
+        // }
+
+        // var url= '/process_order/'
+
+        // fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'X-CSRFToken': csrftoken,
+        //     },
+        //     body:JSON.stringify({'form': userFormData, 'shipping': shippingInfo})
+        // })
+
+        // .then((response) => response.json())
+
+        // .then((data) => {
+        //     console.log('Success: ', data);
+        //     alert('Thanh toán thành công')
+
+        //     cart = {}
+        //     document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+
+        //     window.location.href = "{% url 'home' %}"
+        // })
+    }
+
+    
+
+</script>
+
+{% endblock %}

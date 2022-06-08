@@ -1,0 +1,61 @@
+{% extends 'book/main.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Nhập sách{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-center form_container">
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="flex:2"><strong>Tên sách</strong></div>
+        {{form.ten_sach}}
+        <br>        
+        
+        <div style="flex:2"><strong>Ngày nhập</strong></div>
+        {{form.ngay_nhap}}
+        <br>  
+
+        <div style="flex:2"><strong>Số lượng</strong></div>
+        {{form.so_luong}}
+        <br>    
+
+        <div style="flex:2"><strong>Thể loại</strong></div>
+        {{form.the_loai}}
+        <br>    
+
+        <div style="flex:2"><strong>Tác giả</strong></div>
+        {{form.tac_gia}}
+        <br>    
+
+        <div style="flex:2"><strong>Đơn giá</strong></div>
+        {{form.don_gia}}
+        <br>    
+
+        <div style="flex:2"><strong>Giá bán</strong></div>
+        {{form.gia_ban}}
+        <br>    
+        
+        <div style="flex:2"><strong>Nhà xuất bản</strong></div>
+        {{form.nha_xuat_ban}}
+        <br>    
+
+        <div style="flex:2"><strong>Năm xuất bản</strong></div>
+        {{form.nam_xuat_ban}}
+        <br>      
+
+        <div style="flex:2"><strong>Mô tả</strong></div>
+        {{form.mo_ta}}
+        <br> 
+
+        <div style="flex:2"><strong>Ảnh sách</strong></div>
+        {{form.anh_sach}}
+        <br>    
+        <br>
+        <div class="submit">
+            <input class="btn" type="submit">
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'book/main.html' %}
+
+<!-- Xem chi tiết sách -->
+{% block title %}Sách{% endblock %}
+
+{% block content %}
+<main class="container my-4">
+    <!-- Featured Products -->
+    <h3 class="my-4 border-bottom pb-1">{{book.ten_sach}}</h3>
+    <div class="row">
+        <!-- Images -->
+		<div class="col-md-4">
+			<img id="zoom_01" data-zoom-image={{book.anh_bia.url}} src={{book.anh_bia.url}} class="card-img-top" alt="{{book.ten_sach}}">
+		</div>
+        <div class="col-md-8">
+            <p>{{book.mo_ta}}</p>
+            <hr/>
+            <table class="table table-bordered">
+				<tr>
+					<th>Bìa</th>
+					<td>
+						Bìa cứng
+					</td>
+				</tr>
+				<tr>
+					<th>Kích thước</th>
+					<td>
+						1024x512 (khổ A4 dọc)
+					</td>
+				</tr>
+				<tr>
+					<th>Price</th>
+					<th><span class="product-price-{{book.id}}">{{book.gia_ban|floatformat:"-3g"}} VND</span></th>
+				</tr>
+			</table>
+            <div class="input-group my-3" style="width:30%;">
+                <input type="number" value="1" class="form-control product-qty-{{book.id}}" id="productQty" />
+                <div class="input-group-append">
+                    <input type="hidden" class="product-image-{{book.id}}" value="{{book.anh_bia.url}}" />
+                    <input type="hidden" class="product-id-{{book.id}}" value="{{book.id}}" />
+                    <input type="hidden" class="product-title-{{book.id}}" value="{{book.ten_sach}}" />
+                  <button class="btn btn-primary btn-sm add-to-cart" data-index="{{book.id}}" type="button" id="addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                </div>
+              </div>
+        </div>
+    </div>
+    <hr />
+	<div class="row">
+        <div class="col-md-6">
+            <h3 class="my-3">Chi tiết sản phẩm</h3>
+            <!-- Detail -->
+			<table class="table table-bordered">
+				<tr>
+					<th>Nhà xuất bản</th>
+					<td><a>{{book.nha_xuat_ban}}</a></td>
+				</tr>
+				<tr>
+					<th>Thể loại</th>
+					<td><a>{{book.the_loai}}</a></td>
+				</tr>
+				<tr>
+					<th>Tác giả</th>
+					<td>{{book.tac_gia}}</td>
+				</tr>
+                <tr>
+					<th>Tồn kho</th>
+					<td>{{book.so_luong}}</td>
+				</tr>
+			</table>
+        </div>
+        <!-- Reviews -->
+        <!-- src: https://github.com/codeartisanlab/ecommerce-website-in-django-3-and-bootstrap-4/blob/master/main/templates/product_detail.html -->
+    </div>
+</main>
+
+
+
+{% endblock %}

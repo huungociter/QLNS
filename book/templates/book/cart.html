@@ -1,0 +1,57 @@
+{% extends 'book/main.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Giỏ hàng{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box-element">
+            <div class="cart-row">
+                <div style="flex:2"></div>
+                <div style="flex:2"><strong>Tên sách</strong></div>
+                <div style="flex:1"><strong>Giá bán</strong></div>
+                <div style="flex:1"><strong>Số lượng</strong></div>
+                <div style="flex:1"><strong>Giá tiền</strong></div>
+                <div style="flex:1"></div>
+            </div>
+            
+            {% for mh in mat_hang %}
+            <div class="cart-row">
+                <div style="flex:2"><img class="row-image" style="width: 190px; height: 248px" src="{{mh.sach.imageURL}}"></div>
+                <div style="flex:2">{{mh.sach.ten_sach}}</div>
+                <div style="flex:1">{{mh.sach.don_gia|floatformat:0|intcomma}} đ</div>
+                <div style="flex:1">
+                    <p class="quantity">{{mh.so_luong}}</p>
+                    <div class="quantity">
+                        <img data-book={{mh.sach.id}} data-action="add" class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
+                
+                        <img data-book={{mh.sach.id}} data-action="remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
+                    </div>
+                </div>
+                <div style="flex:1">{{mh.get_total|floatformat:0|intcomma}} đ</div>
+                <div style="flex:1">
+                    <img data-book={{mh.sach.id}} data-action="clear" class="chg-quantity update-cart" src="{% static  'images/remove.png' %}" style="width:12px; height:12px">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <br>
+        <br>
+        <div class="box-element">
+            <a  class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Tiếp tục mua sách</a>
+            <br>
+            <br>
+            <table class="table">
+                <tr>
+                    <th><h5>SL: <strong>{{hd.get_cart_items}}</strong></h5></th>
+                    <th><h5>Tổng tiền:<strong> {{hd.get_cart_total|floatformat:0|intcomma}} đ</strong></h5></th>
+                    <th>
+                        <a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Thanh toán</a>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
