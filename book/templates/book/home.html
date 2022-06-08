@@ -3,24 +3,85 @@
 {% load humanize %}
 {% block title %}Trang chủ{% endblock %}
 
+
 {% block content %}
-    <div class="row">
+	{% if user.person.get_debt > 20000 %}
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		<strong>Thông báo!</strong> Vui lòng thanh toán tiền nợ ({{user.person.get_debt|floatformat:0|intcomma}} VND) để tiếp tục mua sách
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	{% endif %}
+
+	<div class="row">
+		<div class="col-md-6 mx-auto">
+			<form class="form-inline my-2 my-lg-0 mb-4 " method="get">
+				{{myFilter.form}}
+				<button class="btn btn-success my-2 my-sm-0" type="submit">Tìm sách</button>
+			</form>
+		</div>
+	</div>
+	<hr>
+    <div class="row mt-4">
 		{% for s in sach %}
-        <div class="col-md-3 mb-4">
-			<div class="card h-100 book-card">
-				<a href="#" class="img-card"><img class="mx-auto" src="{{s.imageURL}}"></a>
-				<div class="card-body">
-					<div class="card-title">
-						<h6>{{s.ten_sach}}</h6>
-					</div>	
-					<hr>		
-					<h5 style="float: right; color:darkred"><strong>{{s.don_gia|floatformat:0|intcomma}} đ</strong></h5>
-					{% if user.is_authenticated %}
-						<button data-book="{{s.id}}" data-action="add" class="w-100 btn btn-outline-success add-btn update-cart">Thêm vào giỏ</button>
-					{% endif %}
+			{% if s.get_book_quantity > 0 %}
+			<div class="col-md-3 mb-4">
+				<div class="card h-100 book-card">
+					<a href="{{s.get_absolute_url}}" class="img-card"><img class="mx-auto" src="{{s.imageURL}}"></a>
+
+					<div class="card-body">
+						<div class="card-title">
+							<h6>{{s.ten_sach}}</h6>
+						</div>	
+						<hr>		
+						<h5 style="float: right; color:darkred"><strong>{{s.gia_ban|floatformat:0|intcomma}} VND</strong></h5><span class="badge badge-pill badge-warning">SL: {{s.get_book_quantity}}</span>
+
+						{% if user.is_authenticated and user.person.get_debt <= 20000 %}
+							<button data-book="{{s.id}}" data-action="add" class="w-100 btn btn-outline-success add-btn update-cart">Thêm vào giỏ</button>
+						{% endif %}
+					</div>
 				</div>
 			</div>
-		</div>
+			{% endif %}
 		{% endfor %}
 	</div>
+
+	<hr>
+	{% if sach.has_other_pages %}
+	<nav aria-label="Page navigation example">
+		<ul class="pagination justify-content-center">
+		  {% if sach.has_previous %}
+			<li class="page-item">
+			  <a class="page-link" href="?page=1">&laquo;</a>
+			</li>
+		  {% else %}
+			<li class="page-item disabled">
+			  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">&laquo;</a>
+			</li>
+		  {% endif %}
+		  {% for i in sach.paginator.page_range %}
+			{% if sach.number == i %}
+			  <li class="page-item active" aria-current="page">
+				<span class="page-link">
+				  {{ i }}
+				  <span class="sr-only">(current)</span>
+				</span>
+			  </li>
+			{% else %}
+			  <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+			{% endif %}
+		  {% endfor %}
+		  {% if sach.has_next %}
+			<li class="page-item">
+			  <a class="page-link" href="?page={{ sach.paginator.num_pages }}">&raquo;</a>
+			</li>
+		  {% else %}
+			<li class="page-item disabled">
+			  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">&raquo;</a>
+			</li>
+		  {% endif %}
+		</ul>
+	  </nav>
+	{% endif %}
 {% endblock %}

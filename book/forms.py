@@ -2,7 +2,7 @@ from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, Textarea
 
 class CreateUserForm(UserCreationForm):
     class Meta:
@@ -13,6 +13,13 @@ class CustomerInfo(ModelForm):
     class Meta:
         model = Person
         fields = ['ho_ten', 'so_dien_thoai', 'email', 'profile_pic']
+
+class InvoiceForm(ModelForm):
+    class Meta:
+        model = HoaDon
+        fields = ['id_HD', 'ngay_lap_HD']
+
+
 
 class CreateBook(ModelForm):
     class Meta:

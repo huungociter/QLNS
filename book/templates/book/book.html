@@ -10,7 +10,7 @@
     <div class="row">
         <!-- Images -->
 		<div class="col-md-4">
-			<img id="zoom_01" data-zoom-image={{book.anh_bia.url}} src={{book.anh_bia.url}} class="card-img-top" alt="{{book.ten_sach}}">
+			<img id="zoom_01" data-zoom-image={{book.anh_sach.url}} src={{book.anh_sach.url}} class="card-img-top" alt="{{book.ten_sach}}">
 		</div>
         <div class="col-md-8">
             <p>{{book.mo_ta}}</p>
@@ -33,15 +33,18 @@
 					<th><span class="product-price-{{book.id}}">{{book.gia_ban|floatformat:"-3g"}} VND</span></th>
 				</tr>
 			</table>
+			{% if user.person.get_debt <= 20000 %}
             <div class="input-group my-3" style="width:30%;">
-                <input type="number" value="1" class="form-control product-qty-{{book.id}}" id="productQty" />
+                <input type="number" value="1" min="1" max="{{book.get_book_quantity}}" class="form-control product-qty-{{book.id}}" id="productQty" />
                 <div class="input-group-append">
-                    <input type="hidden" class="product-image-{{book.id}}" value="{{book.anh_bia.url}}" />
-                    <input type="hidden" class="product-id-{{book.id}}" value="{{book.id}}" />
-                    <input type="hidden" class="product-title-{{book.id}}" value="{{book.ten_sach}}" />
-                  <button class="btn btn-primary btn-sm add-to-cart" data-index="{{book.id}}" type="button" id="addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+					<input type="hidden" class="product-image-{{book.id}}" value="{{book.anh_bia.url}}" />
+					<input type="hidden" class="product-id-{{book.id}}" value="{{book.id}}" />
+					<input type="hidden" class="product-title-{{book.id}}" value="{{book.ten_sach}}" />
+                  	<button class="btn btn-success add-btn" data-index="{{book.id}}" data-book="{{book.id}}" data-action="add-amount" type="button" id="addToCartBtn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ</button>
+
                 </div>
-              </div>
+			</div>
+			{% endif %}
         </div>
     </div>
     <hr />
@@ -64,7 +67,7 @@
 				</tr>
                 <tr>
 					<th>Tồn kho</th>
-					<td>{{book.so_luong}}</td>
+					<td>{{book.get_book_quantity}}</td>
 				</tr>
 			</table>
         </div>
@@ -73,6 +76,38 @@
     </div>
 </main>
 
+<script>
+	var addBtn = document.getElementById('addToCartBtn')
+	
+	addBtn.addEventListener('click', function(){
+		var bookId = this.dataset.book
+		var action = this.dataset.action
+		var quantity = Number(document.getElementById('productQty').value)
+		updateCart(bookId, action, quantity)
+	})
 
+
+function updateCart(bookId, action, quantity)
+{
+    var url= '/update_item/'
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body:JSON.stringify({'bookId': bookId, 'action': action, 'quantity': quantity})
+    })
+
+    .then((response) => {
+        return response.json()
+    })
+
+    .then((data) => {
+        location.reload()
+    })
+}
+</script>
 
 {% endblock %}

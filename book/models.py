@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 # Create your models here.
 class Person(models.Model):
@@ -34,17 +35,29 @@ class Person(models.Model):
             query_set = ''
         else:
             query_set = query_set[0].name.capitalize()
-            if query_set == 'Khách hàng':
-                query_set = ''
 
         return query_set
+
+    @property
+    def get_debt(self):
+        if 'kh' in self.id: 
+            s = 0
+            cac_hd = HoaDon.objects.filter(khach_hang=self)
+            # print(cac_hd)
+            for hd in cac_hd:
+                if hd.tong_tien != hd.da_tra and hd.da_tra != -1:
+                    s += hd.tong_tien - hd.da_tra
+                    print(hd, s)
+            return s
+
 
 # class TheLoai(models.Model):
     
 class Sach(models.Model):
     # id = models.CharField(max_length=100, primary_key=True) # PK: id và ngay_nhap
     ten_sach = models.CharField(max_length=100, null=True)
-    ngay_nhap = models.DateField(null=True, editable=True)
+    # ngay_nhap = models.DateField(auto_now_add=True)
+    ngay_nhap = models.DateField(null=True,default=timezone.now)
     so_luong = models.PositiveIntegerField(null=True)
     the_loai = models.CharField(max_length=100, null=True)
     tac_gia = models.CharField(max_length=100, null=True)
@@ -55,9 +68,6 @@ class Sach(models.Model):
     nguoi_nhap = models.ForeignKey(Person, null=True, on_delete=models.PROTECT) 
     anh_sach = models.ImageField(default="static/placeholder.png",null=True, blank=True)
     mo_ta = models.TextField("Mô tả ngắn", max_length=1000, null=True, blank=True)
-    # ton_dau = 
-    # phat_sinh = 
-    # ton_cuoi = 
     
     def __str__(self):
         return f'{self.ten_sach}_{self.ngay_nhap}'
@@ -76,6 +86,14 @@ class Sach(models.Model):
         except:
             url = ''
         return url
+
+    @property
+    def get_book_quantity(self):
+        return self.so_luong-20
+    
+    @property
+    def get_name(self):
+        return self.ten_sach
         
     class Meta: # vì django ko cho tạo PK 2 thuộc tính nên làm cách này
         unique_together = ('id', 'ngay_nhap',)
@@ -91,11 +109,11 @@ class HoaDon(models.Model):
             )
     id_HD = models.CharField('Mã hóa đơn', max_length=100, primary_key=True, default= 'HD_', editable=True)
     ngay_lap_HD = models.DateTimeField(null=True)
-    tong_tien = models.FloatField(null=True)
+    tong_tien = models.FloatField(null=True, default=0, editable=True)
     nguoi_lap_HD = models.ForeignKey(Person, verbose_name='Nhân viên', null=True, blank=True, related_name="nhan_vien", on_delete=models.PROTECT)
     khach_hang = models.ForeignKey(Person, verbose_name='Khách hàng', null=True, blank=True, related_name="khach_hang", on_delete=models.PROTECT)
     phuong_thuc_thanh_toan = models.CharField('Phương thức thanh toán', max_length=100, null=False, choices=pttt)
-    da_tra = models.FloatField(null=True)
+    da_tra = models.FloatField(null=True, default=0, editable=True)
     
     def __str__(self):
         return self.id_HD
@@ -104,13 +122,13 @@ class HoaDon(models.Model):
         # constraint: khách hàng phải có chuc_vu='khách hàng'
         # if self.khach_hang.chuc_vu != 'khách hàng':
         #     raise ValidationError('nhân viên không hợp lệ')
-        # # constraint: người lập HD phải là nhân viên
+        # constraint: người lập HD phải là nhân viên
         # if self.nguoi_lap_HD.chuc_vu != 'nhân viên':
         #     raise ValidationError('người lập hóa đơn phải là nhân viên!')
         # constraint: chỉ nợ tối đa 20.000d
-        # if self.tong_tien - self.da_tra > 20000:
-        #     raise ValidationError('khách hàng chỉ được phép nợ tối đa 20.000d')
-        pass
+        if self.tong_tien is not None and self.da_tra is not None and self.tong_tien - self.da_tra > 20000:
+            raise ValidationError('khách hàng chỉ được phép nợ tối đa 20.000d')
+
 
     @property 
     def get_cart_total(self):
@@ -140,8 +158,17 @@ class ChiTietHoaDon(models.Model): # 1 lần nhập 1 sách
     #     # constraint: sách sau khi bán vẫn còn ít nhất 20 cuốn trong kho Sach   
     @property
     def get_total(self):
-        total = self.sach.don_gia * self.so_luong
+        total = self.sach.gia_ban * self.so_luong
         return total
 
     class Meta:
         verbose_name_plural = 'Chi tiết hóa đơn'
+
+# util model để support hàm debt_report() trong view, phải database chính thức
+class Debt(models.Model):
+    khach_hang = models.ForeignKey(Person, null=True, blank=True, on_delete=models.PROTECT)
+    no_dau = models.FloatField(null=True)
+    phat_sinh = models.FloatField(null=True)
+    
+    @property
+    def no_cuoi(self): return self.no_dau + self.phat_sinh

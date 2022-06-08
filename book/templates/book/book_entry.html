@@ -2,60 +2,205 @@
 {% load static %}
 {% load humanize %}
 {% block title %}Nhập sách{% endblock %}
+
 {% block content %}
+<!-- <style>
+ .cl_ten_sach{
+   width: 700px;
+   background-color: rgb(255, 255, 255);
+   position: relative;
+   left: 120px;
+   top: 10px;
+   height: 40px;
+   border-radius: 20px solid black ;
+ }
+ #id_ten_sach{
+  width: 690px;
+  height: 40px;
+ }
+  form{
+    text-align: center;
+    background-color: yellow;
+  }
+</style> -->
+<form autocomplete="off" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div><p>Nhập sách mới</p></div>
+  <hr>
+  <div style="flex:2"><strong>Tên sách</strong></div>
+    <div class="cl_ten_sach">
+      {{form.ten_sach}}
+    </div>
 
-<div class="d-flex justify-content-center form_container">
-    <form method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div style="flex:2"><strong>Tên sách</strong></div>
-        {{form.ten_sach}}
-        <br>        
-        
-        <div style="flex:2"><strong>Ngày nhập</strong></div>
-        {{form.ngay_nhap}}
-        <br>  
 
-        <div style="flex:2"><strong>Số lượng</strong></div>
-        {{form.so_luong}}
-        <br>    
+  <div style="flex:2"><strong>Ngày nhập</strong></div>
+  {{form.ngay_nhap}}
+  <br>
 
-        <div style="flex:2"><strong>Thể loại</strong></div>
-        {{form.the_loai}}
-        <br>    
+  <div style="flex:2"><strong>Số lượng</strong></div>
+  {{form.so_luong}}
+  <br>
 
-        <div style="flex:2"><strong>Tác giả</strong></div>
-        {{form.tac_gia}}
-        <br>    
+  <div style="flex:2"><strong>Thể loại</strong></div>
+  {{form.the_loai}}
+  <br>
 
-        <div style="flex:2"><strong>Đơn giá</strong></div>
-        {{form.don_gia}}
-        <br>    
+  <div style="flex:2"><strong>Tác giả</strong></div>
+  {{form.tac_gia}}
+  <br>
 
-        <div style="flex:2"><strong>Giá bán</strong></div>
-        {{form.gia_ban}}
-        <br>    
-        
-        <div style="flex:2"><strong>Nhà xuất bản</strong></div>
-        {{form.nha_xuat_ban}}
-        <br>    
+  <div style="flex:2"><strong>Đơn giá</strong></div>
+  {{form.don_gia}}
+  <br>
 
-        <div style="flex:2"><strong>Năm xuất bản</strong></div>
-        {{form.nam_xuat_ban}}
-        <br>      
+  <div style="flex:2"><strong>Giá bán</strong></div>
+  {{form.gia_ban}}
+  <br>
 
-        <div style="flex:2"><strong>Mô tả</strong></div>
-        {{form.mo_ta}}
-        <br> 
+  <div style="flex:2"><strong>Nhà xuất bản</strong></div>
+  {{form.nha_xuat_ban}}
+  <br>
 
-        <div style="flex:2"><strong>Ảnh sách</strong></div>
-        {{form.anh_sach}}
-        <br>    
-        <br>
-        <div class="submit">
-            <input class="btn" type="submit">
-        </div>
-    </form>
-</div>
+  <div style="flex:2"><strong>Năm xuất bản</strong></div>
+  {{form.nam_xuat_ban}}
+  <br>
 
+  <div style="flex:2"><strong>Mô tả</strong></div>
+  {{form.mo_ta}}
+  <br>
+
+  <div style="flex:2"><strong>Ảnh sách</strong></div>
+  {{form.anh_sach}}
+  <br>
+  <div class="submit">
+    <input class="btn" type="submit">
+  </div>
+</form>
+
+<script>
+  function autocomplete(inp, arr) {
+    /*the autocomplete function takes two arguments,
+    the text field element and an array of possible autocompleted values:*/
+    var currentFocus;
+    /*execute a function when someone writes in the text field:*/
+    inp.addEventListener("input", function (e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false; }
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function (e) {
+            /*insert the value for the autocomplete text field:*/
+            inp.value = this.getElementsByTagName("input")[0].value;
+            /*close the list of autocompleted values,
+            (or any other open lists of autocompleted values:*/
+            closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+    });
+    /*execute a function presses a key on the keyboard:*/
+    inp.addEventListener("keydown", function (e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+    });
+    function addActive(x) {
+      /*a function to classify an item as "active":*/
+      if (!x) return false;
+      /*start by removing the "active" class on all items:*/
+      removeActive(x);
+      if (currentFocus >= x.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = (x.length - 1);
+      /*add class "autocomplete-active":*/
+      x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+      /*a function to remove the "active" class from all autocomplete items:*/
+      for (var i = 0; i < x.length; i++) {
+        x[i].classList.remove("autocomplete-active");
+      }
+    }
+    function closeAllLists(elmnt) {
+      /*close all autocomplete lists in the document,
+      except the one passed as an argument:*/
+      var x = document.getElementsByClassName("autocomplete-items");
+      for (var i = 0; i < x.length; i++) {
+        if (elmnt != x[i] && elmnt != inp) {
+          x[i].parentNode.removeChild(x[i]);
+        }
+      }
+    }
+    /*execute a function when someone clicks in the document:*/
+    document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+    });
+  }
+
+  /*An array containing all the country names in the world:*/
+  var Tensach = [{% for s in sach %}'{{s.ten_sach}}', {% endfor %}]
+  /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+  autocomplete(document.getElementById("id_ten_sach"), Tensach);
+  var input = document.getElementById('id_ten_sach');
+  var onChange = function (evt) {
+    var ten = this.value;
+    {% for s in sach %}
+    var temp = '{{s.ten_sach}}'
+    if (temp == ten) {
+      document.getElementById('id_ngay_nhap').value = '{{s.ngay_nhap.day}}/{{s.ngay_nhap.month}}/{{s.ngay_nhap.year}}'
+      document.getElementById('id_the_loai').value = '{{s.the_loai}}'
+      document.getElementById('id_tac_gia').value = '{{s.tac_gia}}'
+      document.getElementById('id_don_gia').value = '{{s.don_gia}}'
+      document.getElementById('id_gia_ban').value = '{{s.gia_ban}}'
+      document.getElementById('id_nha_xuat_ban').value = '{{s.nha_xuat_ban}}'
+      document.getElementById('id_nam_xuat_ban').value = '{{s.nam_xuat_ban}}'
+      document.getElementById('id_mo_ta').value = '{{s.mo_ta}}'
+      console.log('{{s.anh_sach}}')
+    }
+    {% endfor %}
+
+  };
+  input.addEventListener('input', onChange, false);
+
+
+</script>
 
 {% endblock %}

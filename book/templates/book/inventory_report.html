@@ -1,0 +1,79 @@
+{%  extends 'book/main.html' %}
+{% block content %}
+
+<!-- <div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<table class="table table">
+				<tr>
+					<th>Product</th>
+					<th>Note</th>
+					<th>Date Orderd</th>
+					<th>Status</th>
+				</tr>
+
+				{% for order in orders %}
+
+				<tr>
+					<td>{{order.product}}</td>
+					<td>{{order.note}}</td>
+					<td>{{order.date_created}}</td>
+					<td>{{order.status}}</td>
+				</tr>
+				{% endfor %}
+
+			</table>
+		</div>
+	</div>
+</div> -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<div class="page-content container">
+    <div class="page-header text-blue-d2">
+        <h1 class="page-title text-secondary-d1">
+            Báo cáo tồn
+        </h1>
+        <div class="page-tools">
+            <div class="action-buttons">
+                <a class="btn bg-white btn-light mx-1px text-95" href="#" data-title="Print">
+                    <i class=""></i>
+                </a>
+                <a class="btn bg-white btn-light mx-1px text-95" href="#" data-title="PDF">
+                    <i class=""></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-borderless border-0 border-b-2 brc-default-l1">
+        <thead class="bg-none bgc-default-tp1">
+            <tr class="text-black">
+                <th>STT</th>
+                <th>Sách</th>
+                <th>Tồn đầu</th>
+                <th>Phát sinh</th>
+                <th>Tồn cuối</th>
+                
+            </tr>
+        </thead>
+
+        <!-- <tbody class="text-95 text-secondary-d3">
+            {% for invoice in invoices %}
+            <tr></tr>
+            <tr>
+                <td>{{invoice.id_HD}}</td>
+                <td>{{invoice.nguoi_lap_HD.ho_ten}}</td>
+                <td>{{invoice.ngay_lap_HD}}</td>
+                <td>{{invoice.phuong_thuc_thanh_toan}}</td>
+                <td>{{invoice.tong_tien}}</td>
+                <th><a class="btn btn-sm btn-info" href="{% url 'review_invoice' invoice.id_HD %}">Xem</a></th>
+            </tr> 
+            {% endfor %}
+        </tbody> -->
+    </table>
+</div>
+
+
+{% endblock content %}

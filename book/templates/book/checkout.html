@@ -6,49 +6,88 @@
 <div>
     <div class="box-element" id="form-wrapper">
         <form id="form">
-            <div id="shipping-info">
-                <p>Địa chỉ nhận hàng:</p>
-                <hr>
-                <div class="form-field">
-                    <input required class="form-control" type="text" name="name" placeholder="Khách hàng">
-                </div>   
-                <div class="form-field">
-                    <input class="form-control" type="text" name="province" placeholder="Tỉnh">
+            <div class="form-row">
+                <div class="col-md-8 mb-3">
+                    <label for="name">Khách hàng</label>
+                    <input required class="form-control" type="text" name="name" id="customer-name" value="{{request.user.person.ho_ten}}">
                 </div>
-                <div class="form-field">
-                    <input class="form-control" type="text" name="city" placeholder="Thành phố">
+                <div class="col-md-4 mb-3">
+                    <label for="sdt">SĐT</label>
+                    <input required class="form-control" type="text" name="sdt" value="{{request.user.person.so_dien_thoai}}">
                 </div>
-                <div class="form-field">
-                    <input class="form-control" type="text" name="address" placeholder="Số nhà">
-                </div>
+            </div> 
+            <br>
+            <h5><strong>Địa chỉ nhận hàng</strong></h5>
+            <div class="col-md-12 mb-3">
+                <label for="address"></label>
+                <input class="form-control" type="text" name="address" value="{{request.user.person.dia_chi}}">
             </div>
-            <hr>
+
+            <!-- <div class="form-row" id="shipping-info">  
+                <div class="col-md-4 mb-3">
+                    <label for="province-city">Tỉnh/Thành phố</label>
+                    <input required class="form-control" type="text" name="province-city" placeholder="TP Hồ Chí Minh">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="district">Quận/Huyện</label>
+                    <input class="form-control" type="text" name="district" placeholder="Quận 1">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="address">Địa chỉ cụ thể</label>
+                    <input class="form-control" type="text" name="address" placeholder="Số nhà, tên đường, phường">
+                </div>
+            </div> -->
+
             <input id="form-button" class="btn btn-success btn-block" type="submit" value="Xác nhận">
         </form>
     </div>
 
     <br>
     <div class="box-element hidden" id="payment-info">Phương thức thanh toán
-        <button id="make-payment">Chọn phương thức thanh toán</button>
+        <select id="payment-option" name="payment-option">
+            <option value="none">--Chọn phương thức thanh toán--</option>
+            <option value="the-ngan-hang">Thẻ ngân hàng</option>
+            <option value="tien-mat">Tiền mặt</option>
+        </select>
+        <hr>
+        <div class="hidden" id="payment-cash">
+            <div class="col-md-12 mb-3 mt-2">
+                <label for="pay">Số tiền trả</label>
+                <input class="form-control" type="text" name="pay" id="pay" placeholder="{{hd.get_cart_total}}">
+            </div>
+        </div>
+        <button id="payment" class="btn btn-warning hidden">Thanh toán</button>
     </div>
     <br>
+    <br>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
 
+        <input type="submit" name="Thanh toán">
+    </form>
+    
+    <br>
+    <br>
     <div class="box-element">
         <div class="box-element">
             <a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Trở lại giỏ</a>
             <hr>
             <h3>Đơn hàng</h3>
+            <h5>SL: {{hd.get_cart_items}}</h5>
+            <h5>Tổng tiền: {{hd.get_cart_total|floatformat:0|intcomma}} VND</h5>
+
             <hr>
             {% for mh in mat_hang %}
             <div class="cart-row">
                 <div style="flex:2"><img class="row-image" src="{{mh.sach.imageURL}}"></div>
                 <div style="flex:2">{{mh.sach.ten_sach}}</div>
-                <div style="flex:1">{{mh.sach.don_gia|floatformat:0|intcomma}} đ</div>
+                <div style="flex:1">{{mh.sach.gia_ban|floatformat:0|intcomma}} VND</div>
                 <div style="flex:1">{{mh.so_luong}}</div>
             </div>
             {% endfor %}
-            <h5>SL: {{hd.get_cart_items}}</h5>
-            <h5>Tổng tiền: {{hd.get_cart_total|floatformat:0|intcomma}} đ</h5>
+            
+
         </div>
     </div>
 </div>
@@ -59,64 +98,70 @@
 
     form.addEventListener('submit', function(e){
         e.preventDefault()
-        console.log('Form submitted...')
         document.getElementById('form-button').classList.add("hidden")
         document.getElementById('payment-info').classList.remove("hidden")
 
     })
+    document.getElementById('payment-option').addEventListener('click', function(e){
+        selectPaymentOption()})
 
-    document.getElementById('make-payment').addEventListener('click', function(e){
-        submitFormData()
+    function selectPaymentOption(){
+        let selector = document.getElementById("payment-option"); 
+
+            selector.addEventListener("change", () => {
+                switch (selector.value) {
+                    case "the-ngan-hang":
+                        document.getElementById('payment-cash').classList.add("hidden");
+                        document.getElementById('payment').classList.remove("hidden");
+                        break; 
+                    case "tien-mat":
+                        document.getElementById('payment-cash').classList.remove("hidden");
+                        document.getElementById('payment').classList.remove("hidden");
+                        break;
+                    case 'none':
+                        document.getElementById('payment').classList.add("hidden");
+                        document.getElementById('payment-cash').classList.add("hidden");
+                        break;
+                }
+            });
+    }
+
+    document.getElementById('payment').addEventListener('click', function(){
+        alert('Đã thanh toán');
+
+        window.location.href = "{% url 'home' %}"
     })
 
     function submitFormData(){
-        alert('Đã thanh toán')
 
-        // var userFormData = {
-        //     'name': null,
-        //     'total': total,
-        // }
+        // lấy thông tin từ form, ví dụ
+        shippingInfo.address = form.address.value
 
-        // var shippingInfo = {
-        //     'address': null,
-        //     'city': null,
-        //     'province': total,
-        // }
+        // url của html muốn truyền post tới, theo video đã gửi trên group
+        var url= '/process_order/'
 
-        // shippingInfo.address = form.address.value
-        // shippingInfo.city = form.city.value
-        // shippingInfo.province = form.province.value
+        // câu lệnh fetch
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body:JSON.stringify({'shipping': shippingInfo}) // truyền thông data muốn gửi 
+        })
 
-        // if(user == "AnonymousUser"){
-        //     userFormData.name = form.name.value
-        // }
+        .then((response) => response.json()) 
 
-        // var url= '/process_order/'
+        .then((data) => {
+            console.log('Success: ', data); // send data thành công, xong
 
-        // fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'X-CSRFToken': csrftoken,
-        //     },
-        //     body:JSON.stringify({'form': userFormData, 'shipping': shippingInfo})
-        // })
+            // clear cart, có thể bị lỗi vì mình làm hơi khác
+            // cart = {}
+            // document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
 
-        // .then((response) => response.json())
-
-        // .then((data) => {
-        //     console.log('Success: ', data);
-        //     alert('Thanh toán thành công')
-
-        //     cart = {}
-        //     document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
-
-        //     window.location.href = "{% url 'home' %}"
-        // })
+            window.location.href = "{% url 'home' %}" // chuyển hướng về home
+        })
     }
-
-    
-
 </script>
 
 {% endblock %}
